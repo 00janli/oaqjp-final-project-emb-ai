@@ -1,4 +1,5 @@
 import requests # Import the requests library to handle HTTP requests
+import json     # Import the json package to handle JSON format
 
 def emotion_detector(text_to_analyze):  # Function to analyze emotions in text
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'  # URL of Watson NLP EmotionPredict
@@ -6,5 +7,14 @@ def emotion_detector(text_to_analyze):  # Function to analyze emotions in text
     header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}  # Set the headers required for the API request
     response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
     
-    return response.text  # Return the response text from the API
+    # return response.text  # Return the response text from the API
+    formatted_response = json.loads(response.text)  # Parsing the JSON response from the API
 
+    # Extracting emotions from the response
+    emotions = formatted_response['emotionPredictions'][0]['emotion']
+    dominant_emotion = max(emotions, key=emotions.get)  # Find the dominant emotion
+
+    result = { **emotions, 'dominant_emotion': dominant_emotion }  # Combining the final result
+
+    return result
+    
