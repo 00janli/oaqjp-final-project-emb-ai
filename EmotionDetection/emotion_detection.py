@@ -1,3 +1,5 @@
+# Install requests: python3 -m pip install requests
+
 import requests # Import the requests library to handle HTTP requests
 import json     # Import the json package to handle JSON format
 
@@ -11,8 +13,15 @@ def emotion_detector(text_to_analyze):  # Function to analyze emotions in text
     formatted_response = json.loads(response.text)  # Parsing the JSON response from the API
 
     # Extracting emotions from the response
-    emotions = formatted_response['emotionPredictions'][0]['emotion']
-    dominant_emotion = max(emotions, key=emotions.get)  # Find the dominant emotion
+    # If the response status code is 200, extract the emotions from the response
+    if response.status_code == 200:
+        emotions = formatted_response['emotionPredictions'][0]['emotion']
+        dominant_emotion = max(emotions, key=emotions.get)  # Find the dominant emotion
+
+    # If the response status code is 400, set scores and dominant emotion to None
+    elif response.status_code == 400:
+        emotions = {key: None for key in ['emotion']}
+        dominant_emotion = None
 
     result = { **emotions, 'dominant_emotion': dominant_emotion }  # Combining the final result
 

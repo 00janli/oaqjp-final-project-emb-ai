@@ -26,9 +26,13 @@ def sent_analyzer():
 
     # Build and format a string of emotion scores excl. dominant_emotion
     emotion_scores = ', '.join("'{}': {}".format(key, value) for key, value in response.items() if key != 'dominant_emotion')
-    
-    # Return a formatted string with emotions
-    return "For the given statement, the system response is {}. The dominant emotion is {}.". format(emotion_scores, response['dominant_emotion'])
+
+    # Check if the label is None, indicating an error or invalid input
+    if response['dominant_emotion'] is None:
+        return "Invalid text! Please try again!"
+    else:    
+        # Return a formatted string with emotions
+        return "For the given statement, the system response is {}. The dominant emotion is <b>{}</b>.". format(emotion_scores, response['dominant_emotion'])
 
 @app.route("/")
 def render_index_page():
